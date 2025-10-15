@@ -1,3 +1,5 @@
+// Sengaja Dipenuhi Command
+// Code: Muhammad Raihan
 // import dependencies
 //
 import "dotenv/config"; // muat variabel lingkungan dari .env
