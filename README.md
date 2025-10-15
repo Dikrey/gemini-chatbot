@@ -11,7 +11,7 @@
 
 Dibangun dengan **Node.js, Express, dan Google Generative AI**, proyek ini memungkinkan developer, tim teknis, dan mitra H8 untuk:
 - Menghasilkan teks cerdas dalam **Bahasa Indonesia yang ramah, gaul, modern, dan informatif**
-- Mendapatkan jawaban berbasis pengetahuan terkini (hingga 2024)
+- Mendapatkan jawaban berbasis pengetahuan terkini (hingga 2024-2025)
 - Mengintegrasikan AI ke dalam aplikasi, chatbot, atau tools internal hanya dengan satu endpoint
 - Fokus pada produktivitas — biarkan AI yang urus riset & penjelasan!
 
