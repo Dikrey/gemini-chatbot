@@ -55,7 +55,7 @@ Lihat setiap permintaan & respons secara real-time dengan emoji dan format yang 
 
 - **Node.js** – Runtime JavaScript modern  
 - **Express.js** – Web framework ringan & cepat  
-- **Google Generative AI** – Kekuatan model Gemini (gemini-1.5-flash)  
+- **Google Generative AI** – Kekuatan model Gemini (gemini-2.5-flash)  
 - **dotenv** – Manajemen variabel lingkungan  
 - **cors** – Dukungan cross-origin untuk frontend  
 - **ES Modules** – Modern JavaScript syntax
@@ -129,6 +129,6 @@ Untuk komersialisasi, diperlukan izin dari tim Visualcodepo.
 ---
 
 ### 📎 Catatan
-- Model `gemini-2.5-flash` diganti ke `gemini-1.5-flash` karena ketersediaan publik  
-- AI tidak memiliki akses internet real-time, tetapi menggunakan pengetahuan hingga akhir 2024  
+- Model `gemini-2.5-flash` diganti ke `gemini-2.5-flash` karena ketersediaan publik  
+- AI tidak memiliki akses internet real-time, tetapi menggunakan pengetahuan hingga akhir 2025  
 - Semua respons dalam Bahasa Indonesia dengan gaya komunikasi modern
