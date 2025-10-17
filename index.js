@@ -7,6 +7,12 @@ import express from "express";
 import cors from "cors";
 import multer from "multer"; // tetap diimpor meski tidak dipakai di route ini (mungkin untuk fitur lain)
 import { GoogleGenAI } from "@google/genai";
+// session 5 import path/url package
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Inisialisasi aplikasi
 const app = express();
 const upload = multer(); // akan digunakan di dalam recording (jika ada upload file nanti)
@@ -34,7 +40,19 @@ const GEMINI_MODEL = "gemini-2.5-flash"; // ✅ gunakan model yang tersedia
 // Inisialisasi middleware
 // contoh: app.use(namaMiddleware());
 app.use(cors()); // inisialisasi CORS (Cross-Origin Resource Sharing) sebagai middleware
-app.use(express.json({ limit: "10mb" })); // parse body JSON (penting untuk menerima req.body)
+app.use(express.json()); // parse body JSON (penting untuk menerima req.body)
+
+// session 5 inisialisasi static directory
+
+app.use(
+  // express.static(rootDirectory, options) 
+  express.static(
+    path.join(__dirname, "public"),
+  ),
+); // rootDirectory
+
+
+
 
 const PORT = process.env.PORT || 3000;
 
@@ -135,6 +153,126 @@ Hindari jawaban kaku, robotik, atau terlalu formal. Gunakan emoji secukupnya unt
   }
 });
 
+
+
+app.post("/api/chat", async (req, res) => {
+  const { conversation } = req.body;
+  console.log(conversation);
+
+  try{
+    // satpam #1 cek conversation apakah berupa array atau tidak dengan array Array.isArray()
+    if(!Array.isArray(conversation)){
+      throw new Error("Conversation harus berupa array!");
+    }
+
+
+    // satpam #2 cek setiap pesan dalam conversation,apakah valid atau tidak
+    let messageIsValid = true;
+
+    if (conversation.length === 0){
+      throw new Error("Conversation tidak boleh kosong!");
+    
+    }
+
+    // for (let i = 0; i < message.length; i++){
+    //   const message = conversation[i];
+    // }
+
+
+    conversation.forEach(message => {
+      // bisa tambah satu kondisi lagi untuk cek variable messageIsValid
+      // di sini
+
+       if (!messageIsValid) {
+        return; // skip, karena sudah ada error sebelumnya
+        }
+
+      // kondiisi message harus berupa object dan bukan null
+      if (!message || typeof message !== "object"){
+        messageIsValid = false;
+        return;
+      }
+
+
+      const { text, role } = message;
+      if (!text || typeof text !== "string"){
+        messageIsValid = false;
+        return;
+      }
+
+      const keys = Object.keys(message);
+      const objectHasValidKeys = keys.every(key => ["text", "role"].includes(key));
+
+      // looping kondisi dalam array
+      //  .every()--> &&-nya si if --> 1 false,semuanya false
+      //  .some() --> ||-nya si if --> true, semuanya menjadi true
+
+      // kondisi 2 message punya struktur valid
+      if(keys.length !== 2 || !objectHasValidKeys){
+       messageIsValid = false;
+      return;
+      }
+
+      // kondiis 3A role harus valid
+      if(!["model", "user"].includes(role)){
+        messageIsValid = false;
+        return;
+      }
+
+      // kondisi 3b -- text harus valid
+      if(!text || typeof text !== "string"){
+        messageIsValid = false;
+        return;
+      }
+        });
+
+      // if (!role || (role !== "user" && role !== "model")){
+      //   messageIsValid = false;
+      //   return;
+      // }
+
+      if(!messageIsValid){
+        throw new Error("Message tidak valid!");
+      }
+      
+  
+
+    
+
+      // proses dagingnya
+      const contents = conversation.map(({role, text}) => ({
+        role,
+        parts: [{text}],
+      }));
+
+      const aiResponse = await ai.models.generateContent({
+        model: GEMINI_MODEL,
+        contents,
+        config: {
+          systemInstruction: `Kamu adalah asisten AI Raihan yang sangat membantu, ramah, dan modern. 
+Selalu jawab dalam **Bahasa Indonesia** dengan gaya bicara yang **sopan, gaul, kekinian, dan mudah dimengerti** (seperti teman ngobrol yang asik). 
+Jika memungkinkan, sertakan informasi berdasarkan pengetahuan terkini (hingga tahun 2025) dan sebutkan sumber atau konteks real-time jika relevan. 
+Hindari jawaban kaku, robotik, atau terlalu formal. Gunakan emoji secukupnya untuk membuat respons lebih hidup! 😊`,
+        },
+      });
+      
+      res.status(200).json({
+        success: true,
+        message: "Berhasil dijawab sama AI nih!",
+        data: aiResponse.text,
+      });
+
+
+  }catch(e){
+    res.status(400).json({
+      success: false,
+      message: e.message,
+      data: null,
+    });
+  }
+});
+
+
 // server-nya harus di-serve dulu!
 app.listen(
   PORT, // port yang akan diakses
@@ -142,6 +280,7 @@ app.listen(
   () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`💬 Endpoint: POST /generate-text`);
+    console.log(`💬 Endpoint: POST /api/chat`);
     console.log(`📝 Contoh input: { "prompt": "Halo" }`);
   }
 );
