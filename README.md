@@ -129,6 +129,15 @@ cd gemini-chatbot
 npm install
 ```
 
+### 3\. Jalankan Server
+
+```bash
+npm start
+# atau
+node index.js
+
+```
+
 ### 3\. Konfigurasi Kunci API (`.env`)
 
 Buat file baru bernama **`.env`** di *root directory* dan isi dengan API Key Anda:
