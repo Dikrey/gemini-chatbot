@@ -1,4 +1,3 @@
-````md
 <div align="center">
   
 # 🚀 AI Productivity Hub: Gemini API for Developers
