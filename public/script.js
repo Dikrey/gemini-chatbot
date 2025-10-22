@@ -4,7 +4,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Element References ---
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
@@ -12,22 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const API_ENDPOINT = '/api/chat';
 
-    // --- Conversation History ---
     let conversation = [];
 
-    // --- Core Functions ---
-
-    /**
-     * Appends a message to the chat box.
-     * @param {string} message - The message content.
-     * @param {'user' | 'bot' | 'thinking' | 'error'} sender - The sender of the message.
-     * @returns {HTMLElement} The created message element.
-     */
     const addMessage = (message, sender) => {
         const messageElement = document.createElement('div');
         messageElement.classList.add('chat-message', `${sender}-message`);
 
-        // Add avatar for each message type
         const avatarElement = document.createElement('div');
         avatarElement.classList.add('message-avatar');
 
@@ -51,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
-        // Using textContent to prevent XSS vulnerabilities
+
         const messageContent = document.createElement('div');
         messageContent.classList.add('message-content');
         const messageText = document.createElement('p');
@@ -62,10 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.appendChild(messageContent);
 
         chatBox.appendChild(messageElement);
-        // Smooth scroll to the latest message
+      
         messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
-        // Update message counter for user and bot messages
         if (sender === 'user' || sender === 'bot') {
             updateMessageCounter();
         }
@@ -82,30 +70,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const userMessage = userInput.value.trim();
         if (!userMessage) {
-            return; // Don't send empty messages
+            return; 
         }
 
-        // Disable form while processing
+     
         submitButton.disabled = true;
         userInput.disabled = true;
 
-        // Show loading state on button
         submitButton.classList.add('loading');
 
-        // 1. Add user's message to the chat box
+        
         addMessage(userMessage, 'user');
-        userInput.value = ''; // Clear the input field
+        userInput.value = '';
 
-        // Add user message to conversation history
+       
         conversation.push({ role: 'user', text: userMessage });
 
-        // Message counter is now handled in addMessage function
-
-        // 2. Show a temporary "Thinking..." bot message
         const thinkingMessageElement = addMessage('Thinking...', 'thinking');
 
         try {
-            // 3. Send the conversation history to the API
+        
             const response = await fetch(API_ENDPOINT, {
                 method: 'POST',
                 headers: {
@@ -116,29 +100,25 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                // Handle HTTP errors like 404, 500, etc.
+                
                 throw new Error(`Failed to get response from server. Status: ${response.status}`);
             }
 
             const result = await response.json();
 
-            // 4. Replace "Thinking..." with the AI's reply
             if (result.success && result.data) {
                 thinkingMessageElement.classList.remove('thinking-message');
                 thinkingMessageElement.classList.add('bot-message');
                 thinkingMessageElement.querySelector('p').textContent = result.data;
-                // Add bot message to conversation history
                 conversation.push({ role: 'model', text: result.data });
 
             } else {
-                // Handle cases where the API returns success: false or no data
                 const errorMessage = result.error || "Sorry, no response received.";
                 thinkingMessageElement.classList.remove('thinking-message');
                 thinkingMessageElement.classList.add('error-message');
                 thinkingMessageElement.querySelector('p').textContent = errorMessage;
             }
         } catch (error) {
-            // 5. Handle network errors or failed requests
             console.error('Error fetching chat response:', error);
             const errorMessage = error.message.includes('Status')
                 ? error.message
@@ -147,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             thinkingMessageElement.classList.add('error-message');
             thinkingMessageElement.querySelector('p').textContent = errorMessage;
         } finally {
-            // Re-enable form for the next message
             submitButton.disabled = false;
             userInput.disabled = false;
             submitButton.classList.remove('loading');
@@ -155,42 +134,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- Typing Indicator ---
     let typingTimeout;
 
-    /**
-     * Shows typing indicator when user starts typing
-     */
+
     const showTypingIndicator = () => {
         clearTimeout(typingTimeout);
-        // Could add a typing indicator in the header or somewhere visible
+       
     };
 
-    /**
-     * Hides typing indicator after user stops typing
-     */
     const hideTypingIndicator = () => {
         typingTimeout = setTimeout(() => {
-            // Hide typing indicator
-        }, 1000);
+        }, 5000);
     };
 
-    // --- Event Listeners ---
+
     if (chatForm) {
         chatForm.addEventListener('submit', handleFormSubmit);
 
-        // Add typing indicators
         userInput.addEventListener('input', showTypingIndicator);
         userInput.addEventListener('keydown', hideTypingIndicator);
     } else {
         console.error('Chat form with id "chat-form" not found.');
     }
 
-    // --- Message Counter ---
     let messageCount = 0;
     const messageCountElement = document.getElementById('message-count');
 
-    // Update message counter display
     const updateMessageCounter = () => {
         messageCount++;
         if (messageCountElement) {
@@ -202,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- Theme Toggle ---
     let isDarkMode = false;
     const themeToggle = document.getElementById('theme-toggle');
 
@@ -213,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('darkMode', isDarkMode);
     };
 
-    // Load saved theme
+
     const savedTheme = localStorage.getItem('darkMode');
     if (savedTheme === 'true') {
         isDarkMode = true;
@@ -225,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.addEventListener('click', toggleTheme);
     }
 
-    // --- Sound Toggle ---
     let soundEnabled = true;
     const soundToggle = document.getElementById('sound-toggle');
 
@@ -235,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('soundEnabled', soundEnabled);
     };
 
-    // Load saved sound preference
     const savedSound = localStorage.getItem('soundEnabled');
     if (savedSound === 'false') {
         soundEnabled = false;
@@ -246,11 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
         soundToggle.addEventListener('click', toggleSound);
     }
 
-    // --- Clear Chat ---
     const clearChatBtn = document.getElementById('clear-chat');
 
     const clearChat = () => {
-        // Clear chat box
         chatBox.innerHTML = `
             <div class="welcome-message">
                 <div class="bot-avatar">
@@ -264,16 +228,15 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Reset conversation history
         conversation = [];
 
-        // Reset message counter
+      
         messageCount = 0;
         if (messageCountElement) {
             messageCountElement.textContent = messageCount;
         }
 
-        // Re-enable form
+     
         submitButton.disabled = false;
         userInput.disabled = false;
         submitButton.classList.remove('loading');
