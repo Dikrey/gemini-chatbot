@@ -53,6 +53,18 @@ Semua aset (`index.html`, `style.css`, `script.js`) sudah tersedia di folder `pu
 
 ---
 
+### 🔹 **Logging Interaktif di Terminal**
+```log
+===================================
+📥 Prompt diterima: "Apa itu CORS?"
+🧠 Mengirim ke model Raihan...
+✅ Respons diterima dari AI
+💬 Jawaban: "CORS itu aturan browser biar..."
+```
+
+---
+
+
 ## 💻 Detail Endpoint API
 
 Proyek ini menyediakan dua pintu masuk utama menuju kekuatan Gemini API:
